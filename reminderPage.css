@@ -1,0 +1,125 @@
+            body{
+                font-family:"Arial" , sans-serif;
+                background-color:#eaeaea;
+            }
+            .container{
+                max-width: 500px;
+                margin: auto;
+                background-color: #fff;
+                padding: 1px 20px 20px 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            label,
+            input,
+            button {
+                margin: 10px 0;
+                box-sizing: border-box;
+            }
+
+            .category-boxes {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin: 6px 0 7px 0;
+            }
+
+            .category-box {
+                background-color: #d8e1e9;
+                color:black;
+                border: none;
+                border-radius: 20px;
+                padding: 8px 16px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                font-family: inherit;
+                font-size: 14px;
+                user-select: none;
+            }
+
+            .category-box:hover {
+                background-color: #45a049;
+                color: white;
+            }
+
+            .category-box.selected {
+                background-color: #4caf50;
+                color: white;
+            }
+
+            .frequency-wrapper {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            gap: 40px;
+            }
+
+            .frequency-label {
+            min-width: 80px; /* ensures spacing */
+            font-weight: normal;
+            margin-bottom: 15px;
+            }
+
+            .radio-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            }
+
+            .radio-group label {
+            font-weight: normal;
+            margin-left: 0px;
+            margin-right: 150px;
+            }
+
+            .checkbox-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 30px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            }
+
+            .checkbox-container label {
+            font-weight: normal;
+            }
+
+            .checkbox-pair {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 2%;
+            }
+
+            input {
+                width: 100%;
+                margin-top: 5px;
+            }
+            table {
+                width:100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+            th,
+            td {
+                padding: 5px;
+                border: 1px solid #ddd;
+                text-align:center;
+            }
+            th {
+                background-color: #4caf50;
+                color: white;
+            }
+            button {
+                background-color:#4caf50;
+                color:white;
+                padding: 5px;
+                border:none;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
