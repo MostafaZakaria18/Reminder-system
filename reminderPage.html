@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Reminder Page</title>
+        <link rel="stylesheet" href="reminderPage.css">
+        <link rel=""
+    </head>
+
+    <body>
+    <div class="container">
+    <h2 style="text-align: center"> Reminder App</h2>
+
+    <label for="">Title :</label>
+    <input type="text" id="title"/>
+    <label for="">Description :</label>
+    <input type="text" id="description"/>
+    <label for="category" style="margin-top: 10px;">Category :</label>
+    <div id="categoryContainer" class="category-boxes">
+    <button type="button" class="category-box" data-category="Reading">Reading</button>
+    <button type="button" class="category-box" data-category="Meeting">Meeting</button>
+    <button type="button" class="category-box" data-category="Cooking">Cooking</button>
+    <button type="button" class="category-box" data-category="Water Intake">Water Intake</button>
+    <button type="button" class="category-box" data-category="Writing">Writing</button>
+    <button type="button" class="category-box" data-category="Hangout">Hangout</button>
+    <button type="button" class="category-box" data-category="Birthday">Birthday</button>
+    <button type="button" class="category-box" data-category="Streaming">Streaming</button>
+    <button type="button" class="category-box" data-category="Assignment">Assignment</button>
+    <button type="button" class="category-box" data-category="Workout">Workout</button>
+    </div>
+    <label for="">Date :</label>
+    <input type="date" id="date"/>
+
+    <!-- Frequency Radio Boxes -->
+    <div class="frequency-wrapper">
+    <label class="frequency-label">Frequency:</label>
+    <div class="radio-group">
+    <input type="radio" name="frequency" id="freqOn" value="on">
+    <label for="freqOn">On</label>
+
+    <input type="radio" name="frequency" id="freqOff" value="off" checked>
+    <label for="freqOff">Off</label>
+    </div>
+    </div>
+
+   <!-- Checkboxes, initially hidden -->
+  <div id="frequencyOptions" class="checkbox-container" style="display: none;"> <!---->
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Sunday</label> <input type="checkbox" value="Sunday">
+  </div>
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Monday</label> <input type="checkbox" value="Monday">
+  </div> 
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Tuesday</label> <input type="checkbox" value="Tuesday">
+  </div>
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Wednesday</label> <input type="checkbox" value="Wednesday" id="Wednesday">
+  </div>
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Thursday</label> <input type="checkbox" value="Thursday" id="Thursday">
+  </div>
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Friday</label> <input type="checkbox" value="Friday" id="Friday">
+  </div>
+  <div class="checkbox-pair">
+  <label>Every</label> <label>Saturday</label> <input type="checkbox" value="Saturday" id="Saturday">
+  </div>
+  <div class="checkbox-pair">
+  <label>On</label> <label>That</label> <label>Specific</label> <label>Day</label> <input type="checkbox" value="SpecificDay" id="SpecificDay">
+  </div>
+  </div>
+
+    <label for="">Time :</label>
+    <input type="time" id="time"/>
+
+    <button style="width: 100%" onclick="scheduleReminder();">
+        Schedule Reminder
+    </button>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Date & Time</th>
+                <th>Frequency On/Off</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="reminderTableBody"></tbody>
+    </table>
+</div>
+
+<audio src="notificationsoundeffect.mp3" id="notificationSound"></audio>
+<script src="reminderPage.js"></script>
+
+    </body>
+</html>
