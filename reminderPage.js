@@ -38,6 +38,7 @@
 });
 
     function scheduleReminder(){
+        
         var title = document.getElementById("title").value;
         var description = document.getElementById("description").value;
         var date = document.getElementById("date").value;
@@ -48,32 +49,13 @@
         var currentTime = new Date();
         var timeDifference = scheduledTime - currentTime;
 
-        let categoryDisplay = selectedCategories.length === 2
-        ? selectedCategories[0] + " & " + selectedCategories[1]
-        : selectedCategories[0] || "";
+        let categoryDisplay = categoryChecking(selectedCategories);
 
         var isFrequencyOn = document.getElementById("freqOn").checked;
 
-        const selectedCheckboxes = Array.from(document.querySelectorAll("#frequencyOptions input[type='checkbox']:checked"))
-        .map(cb => cb.value);
+        const selectedCheckboxes = Array.from(document.querySelectorAll("#frequencyOptions input[type='checkbox']:checked")).map(cb => cb.value);
 
-        let formattedTime = new Date("1970-01-01T" + time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        let dateTimeDisplay;
-
-        if (isFrequencyOn && selectedCheckboxes.length > 0) {
-        if (selectedCheckboxes.includes("SpecificDay")) {
-        const d = new Date(date);
-        dateTimeDisplay = `${d.toLocaleDateString(undefined, { day: 'numeric', month: 'long' })} ${formattedTime}`;
-        } else if (selectedCheckboxes.length === 7) {
-        dateTimeDisplay = `Everyday ${formattedTime}`;
-        } else {
-        dateTimeDisplay = selectedCheckboxes.map(day => `Every ${day}`).join(", ") + ` ${formattedTime}`;
-        }
-        } else {
-       const d = new Date(date);
-       dateTimeDisplay = `${d.toLocaleDateString()} ${formattedTime}`;
-       }
+        let dateTimeDisplay = freqCheckboxesChecking(date , time , isFrequencyOn , selectedCheckboxes);
 
        if (!isFrequencyOn || (isFrequencyOn && selectedCheckboxes.includes("SpecificDay"))) {
        if (timeDifference <= 0) {
@@ -82,7 +64,7 @@
          }
       }
 
-      addReminder(title, description, categoryDisplay, dateTimeDisplay, isFrequencyOn);
+      addReminder(title, description, categoryDisplay, dateTimeDisplay , isFrequencyOn);
 
      if (!isFrequencyOn || (isFrequencyOn && selectedCheckboxes.includes("SpecificDay"))) {
         var timeoutId = setTimeout(function () {
@@ -96,17 +78,8 @@
     }
 
 
-        categoryBoxes.forEach(box => box.classList.remove("selected"));
-        selectedCategories = [];
-        document.getElementById("title").value = "";
-        document.getElementById("description").value = "";
-        document.getElementById("date").value = "";
-        document.getElementById("time").value = "";
-        document.getElementById("freqOff").checked = true;
-        document.getElementById("frequencyOptions").style.display = "none";
-        const checkboxes = document.querySelectorAll("#frequencyOptions input[type='checkbox']");
-        checkboxes.forEach(cb => cb.checked = false);
-        document.getElementById("date").disabled = false;
+      clear();
+        
     }
 
 
@@ -180,3 +153,43 @@
         }
     });
 });
+
+function clear(){
+
+    categoryBoxes.forEach(box => box.classList.remove("selected"));
+        selectedCategories = [];
+        document.getElementById("title").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("date").value = "";
+        document.getElementById("time").value = "";
+        document.getElementById("freqOff").checked = true;
+        document.getElementById("frequencyOptions").style.display = "none";
+        const checkboxes = document.querySelectorAll("#frequencyOptions input[type='checkbox']");
+        checkboxes.forEach(cb => cb.checked = false);
+        document.getElementById("date").disabled = false;
+        document.getElementById("SpecificDay").disabled = false;
+
+}
+
+function freqCheckboxesChecking(date , time , isFrequencyOn , selectedCheckboxes) {
+
+let formattedTime = new Date("1970-01-01T" + time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+if (isFrequencyOn && selectedCheckboxes.length > 0) {
+        if (selectedCheckboxes.includes("SpecificDay")) {
+        const d = new Date(date);
+        return `${d.toLocaleDateString(undefined, { day: 'numeric', month: 'long' })} ${formattedTime}`;
+        } else if (selectedCheckboxes.length === 7) {
+        return `Everyday ${formattedTime}`;
+        } else {
+        return selectedCheckboxes.map(day => `Every ${day}`).join(", ") + ` ${formattedTime}`;
+        }
+        } else {
+       const d = new Date(date);
+       return `${d.toLocaleDateString()} ${formattedTime}`;
+       }
+}
+
+function categoryChecking(selectedCategories) {
+    return selectedCategories.length === 2 ? selectedCategories[0] + " & " + selectedCategories[1] : selectedCategories[0] || "";
+}
