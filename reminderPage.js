@@ -1,5 +1,5 @@
     //Ask user to allow notification access
-    if ("Notification" in window){
+/*    if ("Notification" in window){
     if (Notification.permission === "default") {
         Notification.requestPermission().then(function (permission) {
             if (permission !== "granted") {
@@ -12,7 +12,7 @@
         location.reload();
     }
 }
-
+*/
     var timeoutIds = [];
 
     const categoryBoxes = document.querySelectorAll(".category-box");
@@ -37,6 +37,9 @@
     });
 });
 
+    const priorityRadios = document.querySelectorAll("input[name='priority']"); //priority
+    const clearPriority = document.getElementById("clearPriority"); //priority
+
     function scheduleReminder(){
         
         var title = document.getElementById("title").value;
@@ -49,13 +52,13 @@
         var currentTime = new Date();
         var timeDifference = scheduledTime - currentTime;
 
-        let categoryDisplay = categoryChecking(selectedCategories);
+        let categoryDisplay = categoryScheduling(selectedCategories);
 
         var isFrequencyOn = document.getElementById("freqOn").checked;
 
         const selectedCheckboxes = Array.from(document.querySelectorAll("#frequencyOptions input[type='checkbox']:checked")).map(cb => cb.value);
 
-        let dateTimeDisplay = freqCheckboxesChecking(date , time , isFrequencyOn , selectedCheckboxes);
+        let dateTimeDisplay = freqScheduling(date , time , isFrequencyOn , selectedCheckboxes);
 
        if (!isFrequencyOn || (isFrequencyOn && selectedCheckboxes.includes("SpecificDay"))) {
        if (timeDifference <= 0) {
@@ -77,8 +80,7 @@
     timeoutIds.push(timeoutId);
     }
 
-
-      clear();
+    clear();
         
     }
 
@@ -92,13 +94,17 @@
         var descriptionCell = row.insertCell(1);
         var categoryCell = row.insertCell(2);
         var dateTimeCell = row.insertCell(3);
-        var frequencyCell = row.insertCell(4);
-        var actionCell = row.insertCell(5);
+        var priorityCell = row.insertCell(4); //Priority
+        var frequencyCell = row.insertCell(5);
+        var actionCell = row.insertCell(6);
+
+        let priority = chosenPriorityLevel(); //Priority
 
         titleCell.innerHTML = title;
         descriptionCell.innerHTML = description;
         categoryCell.innerHTML = categoryDisplay;
         dateTimeCell.innerHTML = dateTimeString;
+        priorityCell.innerHTML = priority ? priority : "-"; //Priority
         frequencyCell.innerHTML = isFrequencyOn? "On" : "Off";
         actionCell.innerHTML =
         '<button onclick = "deleteReminder(this);">Delete</button>';
@@ -169,9 +175,15 @@ function clear(){
         document.getElementById("date").disabled = false;
         document.getElementById("SpecificDay").disabled = false;
 
+        const priorityRadios = document.querySelectorAll("input[name='priority']"); //Priority
+        const clearPriority = document.getElementById("clearPriority"); //Priority
+
+        priorityRadios.forEach(r => r.checked = false); //Priority
+        clearPriority.checked = false; //Priority
+
 }
 
-function freqCheckboxesChecking(date , time , isFrequencyOn , selectedCheckboxes) {
+function freqScheduling(date , time , isFrequencyOn , selectedCheckboxes) {
 
 let formattedTime = new Date("1970-01-01T" + time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -190,6 +202,43 @@ if (isFrequencyOn && selectedCheckboxes.length > 0) {
        }
 }
 
-function categoryChecking(selectedCategories) {
+function categoryScheduling(selectedCategories) {
     return selectedCategories.length === 2 ? selectedCategories[0] + " & " + selectedCategories[1] : selectedCategories[0] || "";
 }
+
+/* Priority */
+//priorityRadios
+//clearPriority
+
+function clearPriorityOptions() {
+    clearPriority.addEventListener("change", function () {
+      if (clearPriority.checked === true) {
+        priorityRadios.forEach(r => r.checked = false);
+      }
+    });
+
+    priorityRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+          if (radio.checked) {
+            clearPriority.checked = false;
+          }
+        });
+      });
+}
+  
+  function chosenPriorityLevel() {
+    if (clearPriority.checked === true) return null;
+  
+    for (const radio of priorityRadios) {
+      if (radio.checked) {
+        return radio.value;
+      }
+    }
+    return null;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    clearPriorityOptions();
+  });
+
+  /* Priority */
