@@ -91,6 +91,7 @@
     timeoutIds.push(timeoutId);
     }
 
+    sortRemindersByPriority();
     clear();
         
     }
@@ -339,3 +340,32 @@ function scheduleNext(title, description, dateStr, time) {
 }
 
 // Yearly loop end
+
+//Priority Sorting Function
+
+const priorityOrder = {
+    "Highest": 1,
+    "High": 2,
+    "Medium": 3,
+    "Low": 4,
+    "Lowest": 5,
+    "-": 6
+};
+
+function sortRemindersByPriority() {
+    const tableBody = document.getElementById("reminderTableBody");
+    const rows = Array.from(tableBody.rows);
+
+    // Sort rows based on the priority column
+    rows.sort((a, b) => {
+        const aPriority = a.cells[5].innerText.trim();
+        const bPriority = b.cells[5].innerText.trim();
+
+        const aRank = priorityOrder[aPriority] || 6;
+        const bRank = priorityOrder[bPriority] || 6;
+
+        return aRank - bRank;
+    });
+
+    rows.forEach(row => tableBody.appendChild(row));
+}
