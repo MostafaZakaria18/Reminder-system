@@ -1,5 +1,5 @@
     //Ask user to allow notification access
-/*    if ("Notification" in window){
+    if ("Notification" in window){
     if (Notification.permission === "default") {
         Notification.requestPermission().then(function (permission) {
             if (permission !== "granted") {
@@ -12,7 +12,7 @@
         location.reload();
     }
 }
-*/
+
     var timeoutIds = [];
 
     const categoryBoxes = document.querySelectorAll(".category-box");
@@ -60,6 +60,17 @@
 
         let dateTimeDisplay = freqScheduling(date , time , isFrequencyOn , selectedCheckboxes);
 
+        //call the function scheduleRecurringReminder each time the frquency is toggled on and the user didn't choose specificDay choice
+
+        if (isFrequencyOn && !selectedCheckboxes.includes("SpecificDay")) {
+        scheduleRecurringReminder(title, description, selectedCheckboxes, time);
+        }
+
+        // Same case for the specificDay option 
+        if (isFrequencyOn && selectedCheckboxes.includes("SpecificDay")) {
+        scheduleSpecificDateReminder(title, description, date, time);
+        }
+
        if (!isFrequencyOn || (isFrequencyOn && selectedCheckboxes.includes("SpecificDay"))) {
        if (timeDifference <= 0) {
         alert("The scheduled time is in the past!");
@@ -94,8 +105,8 @@
         var descriptionCell = row.insertCell(1);
         var categoryCell = row.insertCell(2);
         var dateTimeCell = row.insertCell(3);
-        var priorityCell = row.insertCell(4); //Priority
-        var frequencyCell = row.insertCell(5);
+        var frequencyCell = row.insertCell(4);
+        var priorityCell = row.insertCell(5); //Priority
         var actionCell = row.insertCell(6);
 
         let priority = chosenPriorityLevel(); //Priority
@@ -104,8 +115,8 @@
         descriptionCell.innerHTML = description;
         categoryCell.innerHTML = categoryDisplay;
         dateTimeCell.innerHTML = dateTimeString;
-        priorityCell.innerHTML = priority ? priority : "-"; //Priority
         frequencyCell.innerHTML = isFrequencyOn? "On" : "Off";
+        priorityCell.innerHTML = priority ? priority : "-"; //Priority
         actionCell.innerHTML =
         '<button onclick = "deleteReminder(this);">Delete</button>';
     }
@@ -207,9 +218,6 @@ function categoryScheduling(selectedCategories) {
 }
 
 /* Priority */
-//priorityRadios
-//clearPriority
-
 function clearPriorityOptions() {
     clearPriority.addEventListener("change", function () {
       if (clearPriority.checked === true) {
@@ -242,3 +250,92 @@ function clearPriorityOptions() {
   });
 
   /* Priority */
+
+   
+  /* This is for looping around the days of the week */
+
+  function scheduleRecurringReminder(title, description, days, time) {
+
+    days.forEach(day => {
+        triggerReminderLoop(title, description, day, time);
+    });
+}
+
+/*Calculating the next recurrance of the day*/
+
+function getNextOccurrence(dayName, time) {
+        const now = new Date();
+        const result = new Date();
+
+        const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const targetDayIndex = dayOfWeek.indexOf(dayName);
+        const currentDayIndex = now.getDay();
+
+        let daysUntilNext = (targetDayIndex - currentDayIndex + 7) % 7;
+        if (daysUntilNext === 0) {
+            // I am Checking if today's time already passed
+            const [hours, minutes] = time.split(":").map(Number);
+            if (now.getHours() > hours || (now.getHours() === hours && now.getMinutes() >= minutes)) {
+                daysUntilNext = 7; // scheduling next week and putting it all in the result after calculating
+            }
+        }
+
+        result.setDate(now.getDate() + daysUntilNext);
+        const [hours, minutes] = time.split(":").map(Number);
+        result.setHours(hours, minutes, 0, 0);
+
+        return result;
+    }
+
+    /*and use setTimout recursively*/
+
+    function triggerReminderLoop(title, description, dayName, time) {
+        const nextTime = getNextOccurrence(dayName, time);
+        const now = new Date();
+        const timeUntilNext = nextTime.getTime() - now.getTime();
+
+        setTimeout(() => {
+            document.getElementById("notificationSound").play();
+            new Notification(title, { body: description, requireInteraction: true });
+
+            // Schedule next one
+            triggerReminderLoop(title, description, dayName, time);
+        }, timeUntilNext);
+    }
+
+    //Days of the week loop end
+
+    // This loop is a special case for yearly reminder loops
+
+    function scheduleSpecificDateReminder(title, description, dateStr, time) {
+
+    scheduleNext(title, description, dateStr, time);
+}
+
+function getNextYearlyOccurrence(dateStr, time) {
+        const now = new Date();
+        const inputDate = new Date(dateStr);
+        const year = now.getFullYear();
+
+        const target = new Date(`${year}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}-${inputDate.getDate().toString().padStart(2, '0')}T${time}`);
+        
+        if (target < now) {
+            target.setFullYear(year + 1);
+        }
+
+        return target;
+}
+
+function scheduleNext(title, description, dateStr, time) {
+        const next = getNextYearlyOccurrence(dateStr, time);
+        const now = new Date();
+        const delay = next - now;
+
+        setTimeout(() => {
+            document.getElementById("notificationSound").play();
+            new Notification(title, { body: description, requireInteraction: true });
+            scheduleNext(title, description, dateStr, time);
+        }, delay);
+}
+
+// Yearly loop end
