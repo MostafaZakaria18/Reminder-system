@@ -437,7 +437,6 @@ function duplicationChecking(title, description, selectedCategories, date, time,
     return true;
 }
 
-
 //Edit Reminder Functions
 
 //This function is to gather the data from that specific row and puts it up in the place of the inputs 
