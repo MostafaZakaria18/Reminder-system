@@ -3,7 +3,6 @@
     <head>
         <title>Reminder Page</title>
         <link rel="stylesheet" href="reminderPage.css">
-        <link rel=""
     </head>
 
     <body>
@@ -26,6 +25,10 @@
     <button type="button" class="category-box" data-category="Streaming">Streaming</button>
     <button type="button" class="category-box" data-category="Assignment">Assignment</button>
     <button type="button" class="category-box" data-category="Workout">Workout</button>
+    <button type="button" class="category-box" data-category="Drawing">Drawing</button>     <!--ADDED-->
+    <button type="button" class="category-box" data-category="Posting">Posting</button>     <!--ADDED-->
+    <button type="button" class="category-box" data-category="Event">Event</button>         <!--ADDED-->
+    <button type="button" class="category-box" data-category="Designing">Designing</button> <!--ADDED-->
     </div>
     <label for="">Date :</label>
     <input type="date" id="date"/>
@@ -73,8 +76,28 @@
     <label for="">Time :</label>
     <input type="time" id="time"/>
 
-    <button style="width: 100%" onclick="scheduleReminder();">
+    <!--Priority-->
+    <div class="priority-section">
+        <label class="priority-label">Priority Level: <span class="optional-text">(optional)</span></label>
+        <div class="priority-options">
+          <label>Lowest</label> <input type="radio" name="priority" value="Lowest">
+          <label>Low</label> <input type="radio" name="priority" value="Low">
+          <label>Medium</label> <input type="radio" name="priority" value="Medium">
+          <label>High</label> <input type="radio" name="priority" value="High">
+          <label>Highest</label> <input type="radio" name="priority" value="Highest"> 
+          <label>Clear</label> <input type="checkbox" id="clearPriority"> 
+        </div>
+      </div>
+      <!--Priority-->
+
+    <button id="scheduleReminderBtn" style="width: 100%" onclick="scheduleReminder();">
         Schedule Reminder
+    </button>
+
+    <!-- A hidden edit reminder button -->
+     
+    <button id="editReminderBtn" onclick="editReminder()" style="display: none; width: 100%;">
+        Edit Reminder
     </button>
 
     <table border="1">
@@ -85,7 +108,9 @@
                 <th>Category</th>
                 <th>Date & Time</th>
                 <th>Frequency On/Off</th>
-                <th>Action</th>
+                <th>Priority Level</th> <!--Priority-->
+                <th>Action 1</th>
+                <th>Action 2</th>
             </tr>
         </thead>
         <tbody id="reminderTableBody"></tbody>
