@@ -90,8 +90,14 @@
       </div>
       <!--Priority-->
 
-    <button style="width: 100%" onclick="scheduleReminder();">
+    <button id="scheduleReminderBtn" style="width: 100%" onclick="scheduleReminder();">
         Schedule Reminder
+    </button>
+
+    <!-- A hidden edit reminder button -->
+     
+    <button id="editReminderBtn" onclick="editReminder()" style="display: none; width: 100%;">
+        Edit Reminder
     </button>
 
     <table border="1">
@@ -103,7 +109,8 @@
                 <th>Date & Time</th>
                 <th>Frequency On/Off</th>
                 <th>Priority Level</th> <!--Priority-->
-                <th>Action</th>
+                <th>Action 1</th>
+                <th>Action 2</th>
             </tr>
         </thead>
         <tbody id="reminderTableBody"></tbody>
