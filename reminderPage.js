@@ -46,19 +46,18 @@
         var description = document.getElementById("description").value;
         var date = document.getElementById("date").value;
         var time = document.getElementById("time").value;
-
         var dateTimeString = date + " " + time;
         var scheduledTime = new Date(dateTimeString);
         var currentTime = new Date();
         var timeDifference = scheduledTime - currentTime;
-
         let categoryDisplay = categoryScheduling(selectedCategories);
-
         var isFrequencyOn = document.getElementById("freqOn").checked;
-
         const selectedCheckboxes = Array.from(document.querySelectorAll("#frequencyOptions input[type='checkbox']:checked")).map(cb => cb.value);
-
         let dateTimeDisplay = freqScheduling(date , time , isFrequencyOn , selectedCheckboxes);
+
+        if(!validateReminderInput(title, description, selectedCategories ,date, time, isFrequencyOn, selectedCheckboxes) || !duplicationChecking(title, description, selectedCategories, date, time, isFrequencyOn, selectedCheckboxes)) {
+            return;
+        }
 
         //call the function scheduleRecurringReminder each time the frquency is toggled on and the user didn't choose specificDay choice
 
@@ -368,4 +367,65 @@ function sortRemindersByPriority() {
     });
 
     rows.forEach(row => tableBody.appendChild(row));
+}
+
+//reminder validation function
+
+function validateReminderInput(title, description, selectedCategories ,date, time, isFrequencyOn, selectedCheckboxes) {
+    // Check required fields
+    if (!title.trim() || !description.trim()) {
+        alert("Title or description cannot be empty.");
+        return false;
+    }
+
+    if (selectedCategories.length === 0) {
+        alert("You must select at least one category.");
+        return false;
+    }
+
+    if (!time.trim()) {
+        alert("Time cannot be empty.");
+        return false;
+    }
+
+    // Check date rules
+    const specificDaySelected = selectedCheckboxes.includes("SpecificDay");
+    if (!isFrequencyOn || (isFrequencyOn && specificDaySelected)) {
+        if (!date.trim()) {
+            alert("Date is required.");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function duplicationChecking(title, description, selectedCategories, date, time, isFrequencyOn, selectedCheckboxes){
+
+    // Check for duplicate reminders
+    const tableBody = document.getElementById("reminderTableBody");
+    const rows = Array.from(tableBody.rows);
+    let priority = chosenPriorityLevel() || "-";
+    let categoryDisplay = categoryScheduling(selectedCategories);
+    let dateTimeDisplay = freqScheduling(date, time, isFrequencyOn, selectedCheckboxes);
+
+    for (let row of rows) {
+        const [t, d, c, dt, f, p] = Array.from(row.cells).map(cell => cell.innerText.trim());
+
+        const freqValue = isFrequencyOn ? "On" : "Off";
+
+        if (
+            t === title.trim() &&
+            d === description.trim() &&
+            c === categoryDisplay &&
+            dt === dateTimeDisplay &&
+            f === freqValue &&
+            p === priority
+        ) {
+            alert("This reminder is already scheduled.");
+            return false;
+        }
+    }
+
+    return true;
 }
