@@ -1,4 +1,25 @@
-    //Ask user to allow notification access
+  function loadNavbar() {
+  fetch("navbar.html")
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("navbar").innerHTML = data;
+    })
+    .catch(error => console.error("Failed to load navbar:", error));
+}
+function loadFooter() {
+  fetch("footer.html")
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("footer").innerHTML = data;
+    })
+    .catch(error => console.error("Failed to load footer:", error));
+}
+
+
+window.addEventListener("DOMContentLoaded", loadNavbar, loadFooter);
+  
+
+  //Ask user to allow notification access
     if ("Notification" in window){
     if (Notification.permission === "default") {
         Notification.requestPermission().then(function (permission) {
