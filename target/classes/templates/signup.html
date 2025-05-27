@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .signup-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            margin: auto;
+        }
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            background-color: #0d6efd;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .password-requirements {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        .requirement {
+            margin-bottom: 0.25rem;
+        }
+        .requirement.met {
+            color: #198754;
+        }
+        .requirement.not-met {
+            color: #dc3545;
+        }
+        .requirement i {
+            margin-right: 0.5rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container">
+        <div class="signup-container">
+            <h2 class="text-center mb-4">Create an Account</h2>
+            
+            <form th:action="@{/signup}" th:object="${user}" method="post" id="signupForm">
+                <div class="form-floating">
+                    <input type="text" class="form-control" th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                           id="fullName" th:field="*{fullName}" placeholder="Full Name" required>
+                    <label for="fullName">Full Name</label>
+                    <div class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="text" class="form-control" th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                           id="username" th:field="*{username}" placeholder="Username" required>
+                    <label for="username">Username</label>
+                    <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="email" class="form-control" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                           id="email" th:field="*{email}" placeholder="Email" required>
+                    <label for="email">Email</label>
+                    <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="password" class="form-control" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                           id="password" th:field="*{password}" placeholder="Password" required>
+                    <label for="password">Password</label>
+                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    <div class="password-requirements">
+                        <div class="requirement" id="length">
+                            <i class="bi"></i>At least 8 characters
+                        </div>
+                        <div class="requirement" id="uppercase">
+                            <i class="bi"></i>One uppercase letter
+                        </div>
+                        <div class="requirement" id="lowercase">
+                            <i class="bi"></i>One lowercase letter
+                        </div>
+                        <div class="requirement" id="number">
+                            <i class="bi"></i>One number
+                        </div>
+                        <div class="requirement" id="special">
+                            <i class="bi"></i>One special character (@#$%^&+=!)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" class="form-control" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                           id="confirmPassword" th:field="*{confirmPassword}" placeholder="Confirm Password" required>
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary mt-3" id="submitBtn" disabled>Sign Up</button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const submitBtn = document.getElementById('submitBtn');
+            const requirements = {
+                length: { regex: /.{8,}/, element: document.getElementById('length') },
+                uppercase: { regex: /[A-Z]/, element: document.getElementById('uppercase') },
+                lowercase: { regex: /[a-z]/, element: document.getElementById('lowercase') },
+                number: { regex: /[0-9]/, element: document.getElementById('number') },
+                special: { regex: /[@#$%^&+=!]/, element: document.getElementById('special') }
+            };
+
+            function updateRequirements(value) {
+                let allMet = true;
+                for (const [key, requirement] of Object.entries(requirements)) {
+                    const isMet = requirement.regex.test(value);
+                    const element = requirement.element;
+                    element.classList.toggle('met', isMet);
+                    element.classList.toggle('not-met', !isMet);
+                    element.querySelector('i').className = `bi bi-${isMet ? 'check-circle-fill' : 'x-circle-fill'}`;
+                    allMet = allMet && isMet;
+                }
+                return allMet;
+            }
+
+            function validatePasswords() {
+                const passwordValid = updateRequirements(password.value);
+                const passwordsMatch = password.value === confirmPassword.value;
+                submitBtn.disabled = !(passwordValid && passwordsMatch && password.value && confirmPassword.value);
+            }
+
+            password.addEventListener('input', validatePasswords);
+            confirmPassword.addEventListener('input', validatePasswords);
+        });
+    </script>
+</body>
+</html> 
