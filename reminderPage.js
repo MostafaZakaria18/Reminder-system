@@ -562,9 +562,32 @@ function editReminder() {
     var time = document.getElementById("time").value;
     var isFrequencyOn = document.getElementById("freqOn").checked;
     const selectedCheckboxes = Array.from(document.querySelectorAll("#frequencyOptions input[type='checkbox']:checked")).map(cb => cb.value);
+    const scheduledTime = new Date(date + " " + time);
+    const currentTime = new Date();
+    const timeDifference = scheduledTime - currentTime;
+
 
     if (!validateReminderInput(title, description, selectedCategories, date, time, isFrequencyOn, selectedCheckboxes) || !duplicationChecking(title, description, selectedCategories, date, time, isFrequencyOn, selectedCheckboxes)) {
         return;
+    }
+
+    if (isFrequencyOn && !selectedCheckboxes.includes("SpecificDay")) {
+        scheduleRecurringReminder(title, description, selectedCheckboxes, time);
+    } else if (isFrequencyOn && selectedCheckboxes.includes("SpecificDay")) {
+        scheduleSpecificDateReminder(title, description, date, time);
+    } else {
+        if (timeDifference > 0) {
+            const timeoutId = setTimeout(function () {
+                document.getElementById("notificationSound").play();
+                new Notification(title, {
+                    body: description,
+                    requireInteraction: true,
+                });
+            }, timeDifference);
+            timeoutIds[editingRowIndex] = timeoutId;
+        } else {
+            alert("The scheduled time is in the past!");
+        }
     }
 
     let categoryDisplay = categoryScheduling(selectedCategories);
@@ -596,5 +619,6 @@ function editReminder() {
     for (let row of table.rows) {
     if (row.cells[6]) row.cells[6].style.display = "";
     if (row.cells[7]) row.cells[7].style.display = "";
+
 }
 }
