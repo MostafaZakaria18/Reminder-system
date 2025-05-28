@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">Task Reminder</a>
+            <div class="navbar-nav ms-auto">
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <!-- Alert Messages -->
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-pencil-square text-primary me-2"></i>
+                        <h5 class="card-title mb-0">Edit Task</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/tasks/{id}/edit(id=${task.id})}" method="post" th:object="${task}">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       th:value="*{title}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" 
+                                          rows="3" th:text="*{description}"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dueDate" class="form-label">Due Date</label>
+                                <input type="datetime-local" class="form-control" id="dueDate" name="dueDate"
+                                       th:value="${#temporals.format(task.dueDate, 'yyyy-MM-dd''T''HH:mm')}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option th:each="p : ${priorities}"
+                                            th:value="${p}"
+                                            th:text="${p}"
+                                            th:selected="${p == task.priority}">
+                                        Priority Level
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="/dashboard" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-1"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Task Preview Card -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-eye text-info me-2"></i>
+                        <h5 class="card-title mb-0">Task Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="task-preview p-3 rounded"
+                             th:class="${'task-preview p-3 rounded ' + (task.completed ? 'bg-light' : '')}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1" th:text="${task.title}"
+                                        th:class="${task.completed ? 'text-decoration-line-through text-muted' : ''}">
+                                        Task Title
+                                    </h6>
+                                    <p class="mb-2 text-muted small" th:if="${task.description}" 
+                                       th:text="${task.description}">Description</p>
+                                </div>
+                                <span th:class="'badge ' + 
+                                    ${task.priority == T(com.example.signupauth.model.Task.Priority).HIGH ? 'bg-danger' : 
+                                     task.priority == T(com.example.signupauth.model.Task.Priority).MEDIUM ? 'bg-warning' : 'bg-info'}"
+                                      th:text="${task.priority}">Priority</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">
+                                    Due: <span th:text="${#temporals.format(task.dueDate, 'yyyy-MM-dd HH:mm')}">2024-01-01</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set minimum date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            const hours = String(today.getHours()).padStart(2, '0');
+            const minutes = String(today.getMinutes()).padStart(2, '0');
+            
+            const currentDateTime = `${yyyy}-${mm}-${dd}T${hours}:${minutes}`;
+            document.getElementById('dueDate').min = currentDateTime;
+        });
+
+        // Live preview updates
+        const titleInput = document.getElementById('title');
+        const descriptionInput = document.getElementById('description');
+        const priorityInput = document.getElementById('priority');
+        const dueDateInput = document.getElementById('dueDate');
+        
+        const previewTitle = document.querySelector('.task-preview h6');
+        const previewDescription = document.querySelector('.task-preview p');
+        const previewPriority = document.querySelector('.task-preview .badge');
+        const previewDueDate = document.querySelector('.task-preview small span');
+        
+        function updatePreview() {
+            previewTitle.textContent = titleInput.value || 'Task Title';
+            previewDescription.textContent = descriptionInput.value || 'No description';
+            previewDueDate.textContent = dueDateInput.value.replace('T', ' ') || '2024-01-01';
+            
+            const priorityClass = priorityInput.value === 'HIGH' ? 'bg-danger' : 
+                                priorityInput.value === 'MEDIUM' ? 'bg-warning' : 'bg-info';
+            previewPriority.className = 'badge ' + priorityClass;
+            previewPriority.textContent = priorityInput.value;
+        }
+        
+        titleInput.addEventListener('input', updatePreview);
+        descriptionInput.addEventListener('input', updatePreview);
+        priorityInput.addEventListener('change', updatePreview);
+        dueDateInput.addEventListener('input', updatePreview);
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const title = titleInput.value.trim();
+            const dueDate = dueDateInput.value;
+            
+            if (!title) {
+                event.preventDefault();
+                alert('Please enter a task title');
+                return;
+            }
+            
+            if (!dueDate) {
+                event.preventDefault();
+                alert('Please select a due date');
+                return;
+            }
+        });
+    </script>
+</body>
+</html> 
